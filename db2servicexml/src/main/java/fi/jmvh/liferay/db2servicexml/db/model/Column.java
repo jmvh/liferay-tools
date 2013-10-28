@@ -4,25 +4,29 @@
  */
 package fi.jmvh.liferay.db2servicexml.db.model;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  *
  * @author Jussi Hynninen
  */
-public class Table {
+public class Column {
     
     private String name;
     private String friendlyName;
-    private Map<String,Column> columns;
+    private boolean idx;
+    private String type;
+
+    public Column(String name, String type) {
+        init(name,type,false);
+    }
     
-    public Table(String name) {
+    public Column(String name, String type, boolean idx) {
+        init(name,type,idx);
+    }
+    
+    private void init(String name, String type, boolean idx) {
         this.name = name;
         friendlyName = name;
-        columns = new HashMap<String,Column>();
+        this.idx = idx;
     }
 
     public String getName() {
@@ -33,19 +37,12 @@ public class Table {
         this.name = name;
     }
 
-    public Collection<Column> getColumns() {
-        return columns.values();
+    public boolean isIdx() {
+        return idx;
     }
 
-    public void setColumns(List<Column> columns) {
-        this.columns = new HashMap<String,Column>();
-        for(Column c : columns) {
-            this.columns.put(c.getName(), c);
-        }
-    }
-    
-    public void addColumn(Column column) {
-        this.columns.put(column.getName(),column);
+    public void setIdx(boolean idx) {
+        this.idx = idx;
     }
 
     public String getFriendlyName() {
@@ -54,6 +51,10 @@ public class Table {
 
     public void setFriendlyName(String friendlyName) {
         this.friendlyName = friendlyName;
+    }
+
+    public String getType() {
+        return this.type;
     }
     
 }

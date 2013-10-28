@@ -40,7 +40,7 @@ public class DB2ServiceXML {
         try {
             DBImporter importer = new DBImporter(defaults);
         } catch (SQLException ex) {
-            Logger.getLogger(DB2ServiceXML.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DB2ServiceXML.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
     
@@ -52,6 +52,7 @@ public class DB2ServiceXML {
         options.addOption(new Option("u","jdbc.user",true,"User name for the JDBC connection"));
         options.addOption(new Option("p","jdbc.password",true,"Password for the JDBC connection"));
         options.addOption(new Option("h","help",false,"Show this help"));
+        options.addOption(new Option("C","jdbc.default.schema",true,"Default JDBC schema name (for PostgreSQL it's \"public\")"));
         try {
             CommandLine cmdLine = parser.parse(options,args);
             if(cmdLine.hasOption("help")) {
@@ -71,5 +72,5 @@ public class DB2ServiceXML {
         formatter.printHelp( "b2servicexml.sh [options]", options );
         System.exit(1);
     }
-
+    
 }
