@@ -7,9 +7,10 @@ package fi.jmvh.liferay.db2servicexml.db;
 import fi.jmvh.liferay.db2servicexml.db.model.Column;
 import fi.jmvh.liferay.db2servicexml.db.model.Database;
 import fi.jmvh.liferay.db2servicexml.db.model.Table;
+import java.io.File;
+import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,9 +26,18 @@ public class DBConnector {
     
     private Connection con;
     private Properties dbProperties;
+    private Properties friendlyNames;
     
     public DBConnector(Properties dbProperties) throws SQLException {
         this.dbProperties = dbProperties;
+        friendlyNames = new Properties();
+        if(this.dbProperties.containsKey("config.skeleton.file")) {
+            try {
+                friendlyNames.load(new FileInputStream(new File(dbProperties.getProperty("config.skeleton.file"))));
+            } catch (Exception ex) {
+                // Logger.getLogger(DBConnector.class.getName()).log(Level.INFO, "Could not load "+dbProperties.getProperty("config.skeleton.file")+", ignoring...");
+            }
+        }
         con = DriverManager.getConnection(
                 dbProperties.getProperty("jdbc.url"),
                 dbProperties.getProperty("jdbc.user"),
@@ -36,38 +46,40 @@ public class DBConnector {
     }
     
     public Database getDatabase() throws SQLException {
-        Database db = new Database();
+        Database db = new Database(con.getCatalog());
         DatabaseMetaData meta = con.getMetaData();
-        List<String> tables = getTables(meta);
-        for(String tableName : tables) {
-            Table table = new Table(tableName);
-            List<String> columns = getColumns(meta,tableName);
-            for(String column : columns) {
-                table.addColumn(new Column(column,"String"));
+        List<Table> tables = getTables(meta,db.getDbName());
+        for(Table table : tables) {
+            List<Column> columns = getColumns(meta,db.getDbName(),table.getName());
+            for(Column column : columns) {
+                table.addColumn(column);
             }
             db.addTable(table);
         }
         return db;
     }
     
-    private List<String> getColumns(DatabaseMetaData meta, String table) throws SQLException {
-        ArrayList<String> res = new ArrayList<String>();
+    private List<Column> getColumns(DatabaseMetaData meta, String dbName, String table) throws SQLException {
+        ArrayList<Column> res = new ArrayList<Column>();
         ResultSet columns = meta.getColumns(null,null,table,null);
-        
-        while(columns.next()) {
-            String column = columns.getString(4);
+        while(columns.next() && columns.getRow() <= columns.getMetaData().getColumnCount()) {
+            Column column = new Column(columns.getString("COLUMN_NAME"),columns.getString("TYPE_NAME"));
+            column.setFriendlyName(friendlyNames.getProperty(dbName+"."+table+"."+column.getName(),column.getName()));
             res.add(column);
         }
+        
         return res;
     }
     
-    private List<String> getTables(DatabaseMetaData meta) throws SQLException {
-        ArrayList<String> res = new ArrayList<String>();
+    private List<Table> getTables(DatabaseMetaData meta, String dbName) throws SQLException {
+        ArrayList<Table> res = new ArrayList<Table>();
         String type[] = {"TABLE"};
         ResultSet tables = meta.getTables(null, dbProperties.getProperty("jdbc.default.schema"), null,type);
         while (tables.next()) {
             String tableName = tables.getString(3);
-            res.add(tableName);
+            Table tab = new Table(tableName);
+            tab.setFriendlyName(friendlyNames.getProperty(dbName+"."+tableName,tableName));
+            res.add(tab);
         }
         return res;
     }
