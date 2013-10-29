@@ -4,8 +4,8 @@
  */
 package fi.jmvh.liferay.db2servicexml.db.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
 
 /**
  *
@@ -14,7 +14,8 @@ import java.util.List;
 public class Database {
     
     private String dbName = "MyDatabase";
-    private List<Table> tables;
+    private HashMap<String,Table> tables;
+    //private List<Table> tables;
     
     public Database() {
         init(null);
@@ -28,7 +29,7 @@ public class Database {
         if(dbName != null) {
             this.dbName = dbName;
         }
-        this.tables = new ArrayList<Table>();
+        this.tables = new HashMap<String,Table>();
     }
     
     public String getDbName() {
@@ -39,33 +40,30 @@ public class Database {
         this.dbName = dbName;
     }
     
-    public List<Table> getTables() {
-        return tables;
+    public Collection<Table> getTables() {
+        return tables.values();
     }
     
-    public void setTables(List<Table> tables) {
-        this.tables = tables;
+    public void setTables(Collection<Table> tables) {
+        this.tables = new HashMap<String,Table>();
+        for(Table t : tables) {
+            addTable(t);
+        }
     }
     
     public void addTable(Table table) {
-        tables.add(table);
+        tables.put(table.getName(),table);
+    }
+    
+    public Table getTable(String name) {
+        return tables.get(name);
     }
     
     public String toServiceXML() {
         String ret = "<namespace>"+this.getDbName()+"</namespace>\n";
         for(Table t : this.getTables()) {
             ret += "\n";
-            ret += "<entity name=\""+t.getFriendlyName()+"\" table=\""+t.getName()+"\" local-service=\""+t.isLocalService()+"\" remote-service=\""+t.isRemoteService()+"\">\n";
-            ret += "\n";
-            for(Column c : t.getColumns()) {
-                ret += "\t<column name=\""+c.getFriendlyName()+"\" db-name=\""+c.getName()+"\" type=\""+c.getType()+"\"";
-                if(c.isPrimaryKey()) {
-                    ret += " primary=\"true\"";
-                }
-                ret += " />\n";
-            }
-            ret += "\n";
-            ret += "</entity>\n";
+            ret += t.toServiceXML();
         }
         ret += "\n";
         
@@ -85,6 +83,9 @@ public class Database {
             ret += "# Friendly names for columns in "+t.getName()+"\n";
             for(Column c : t.getColumns()) {
                 ret += prefix+"."+t.getName()+"."+c.getName()+"="+c.getFriendlyName()+"\n";
+            }
+            for(ForeignKey fk : t.getForeignKeys()) {
+                ret += prefix+"."+t.getName()+"."+fk.getName()+"="+fk.getFriendlyName()+"\n";
             }
         }
         return ret;

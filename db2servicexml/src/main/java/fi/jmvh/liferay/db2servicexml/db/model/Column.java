@@ -58,4 +58,14 @@ public class Column {
         return this.type;
     }
     
+    public String toServiceXML() {
+        String ret = "";
+        ret += "\t<column name=\""+getFriendlyName()+"\" db-name=\""+getName()+"\" type=\""+getType()+"\"";
+        if(isPrimaryKey()) {
+            ret += " primary=\"true\"";
+        }
+        ret += " />\n";
+        return ret;
+    }
+    
 }

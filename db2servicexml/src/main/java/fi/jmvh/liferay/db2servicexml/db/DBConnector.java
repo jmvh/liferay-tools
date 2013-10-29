@@ -6,7 +6,9 @@ package fi.jmvh.liferay.db2servicexml.db;
 
 import fi.jmvh.liferay.db2servicexml.db.model.Column;
 import fi.jmvh.liferay.db2servicexml.db.model.Database;
+import fi.jmvh.liferay.db2servicexml.db.model.ForeignKey;
 import fi.jmvh.liferay.db2servicexml.db.model.Table;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Connection;
@@ -35,7 +37,7 @@ public class DBConnector {
         friendlyNames = new Properties();
         if(this.dbProperties.containsKey("config.skeleton.file")) {
             try {
-                friendlyNames.load(new FileInputStream(new File(dbProperties.getProperty("config.skeleton.file"))));
+                friendlyNames.load(new BufferedInputStream(new FileInputStream(new File(dbProperties.getProperty("config.skeleton.file")))));
             } catch (Exception ex) {
                 // Logger.getLogger(DBConnector.class.getName()).log(Level.INFO, "Could not load "+dbProperties.getProperty("config.skeleton.file")+", ignoring...");
             }
@@ -57,6 +59,9 @@ public class DBConnector {
                 table.addColumn(column);
             }
             db.addTable(table);
+        }
+        for(Table table : tables) {
+            addForeignKeys(db, table);
         }
         return db;
     }
@@ -100,6 +105,20 @@ public class DBConnector {
     
     public void disconnect() throws SQLException {
         con.close();
+    }
+
+    private void addForeignKeys(Database db, Table table) throws SQLException {
+        ResultSet fKeys = con.getMetaData().getImportedKeys(null, null, table.getName());
+        while(fKeys.next()) {
+            String fkName = fKeys.getString("FK_NAME");
+            Table fkTable = db.getTable(fKeys.getString("PKTABLE_NAME"));
+            ForeignKey fk = new ForeignKey(
+                    fkName,
+                    fkTable.getFriendlyName(),
+                    fkTable.getColumn(fKeys.getString("PKCOLUMN_NAME")).getFriendlyName()
+                    );
+            table.addForeignKey(fk);
+        }
     }
     
 }
