@@ -4,8 +4,10 @@ db2servicexml
 This is a tool for programmatically creating database definitions for the
 Liferay service builder.
 
+<pre>
 $ mvn package
 $ db2servicexml.sh --help
+</pre>
 
 Basic use case
 --------------

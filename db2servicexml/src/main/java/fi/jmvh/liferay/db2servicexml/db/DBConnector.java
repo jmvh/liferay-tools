@@ -78,6 +78,8 @@ public class DBConnector {
         while (tables.next()) {
             String tableName = tables.getString(3);
             Table tab = new Table(tableName);
+            tab.setLocalService(Boolean.parseBoolean(friendlyNames.getProperty(dbName+"."+tableName+".LOCALSERVICE",tab.isLocalService()+"")));
+            tab.setRemoteService(Boolean.parseBoolean(friendlyNames.getProperty(dbName+"."+tableName+".REMOTESERVICE",tab.isRemoteService()+"")));
             tab.setFriendlyName(friendlyNames.getProperty(dbName+"."+tableName,tableName));
             res.add(tab);
         }
