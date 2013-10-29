@@ -26,6 +26,7 @@ public class Column {
     private void init(String name, String type, boolean idx) {
         this.name = name;
         friendlyName = name;
+        this.type = type;
         this.idx = idx;
     }
 

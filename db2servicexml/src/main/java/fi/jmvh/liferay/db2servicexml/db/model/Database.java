@@ -30,25 +30,58 @@ public class Database {
         }
         this.tables = new ArrayList<Table>();
     }
-
+    
     public String getDbName() {
         return dbName;
     }
-
+    
     public void setDbName(String dbName) {
         this.dbName = dbName;
     }
-
+    
     public List<Table> getTables() {
         return tables;
     }
-
+    
     public void setTables(List<Table> tables) {
         this.tables = tables;
     }
     
     public void addTable(Table table) {
         tables.add(table);
+    }
+    
+    public String toServiceXML() {
+        String ret = "<namespace>"+this.getDbName()+"</namespace>\n";
+        for(Table t : this.getTables()) {
+            ret += "\n";
+            ret += "<entity name=\""+t.getFriendlyName()+"\" table=\""+t.getName()+"\" local-service=\"true\" remote-service=\"false\">\n";
+            ret += "\n";
+            for(Column c : t.getColumns()) {
+                ret += "\t<column name=\""+c.getFriendlyName()+"\" db-name=\""+c.getName()+"\" type=\""+c.getType()+"\" />\n";
+            }
+            ret += "\n";
+            ret += "</entity>\n";
+        }
+        ret += "\n";
+        
+        return ret;
+    }
+    
+    public String getFriendlyNamesSkeleton() {
+        String ret = "";
+        String prefix = this.getDbName();
+        //ret += "# Friendly name for database "+this.getDbName()+"\n";
+        //ret += prefix+"="+this.getDbName()+"\n";
+        for(Table t : this.getTables()) {
+            ret += "# Friendly name for table "+t.getName()+"\n";
+            ret += prefix+"."+t.getName()+"="+t.getFriendlyName()+"\n";
+            ret += "# Friendly names for columns in "+t.getName()+"\n";
+            for(Column c : t.getColumns()) {
+                ret += prefix+"."+t.getName()+"."+c.getName()+"="+c.getFriendlyName()+"\n";
+            }
+        }
+        return ret;
     }
     
 }
