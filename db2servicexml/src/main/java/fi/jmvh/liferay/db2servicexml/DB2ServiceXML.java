@@ -1,6 +1,7 @@
 package fi.jmvh.liferay.db2servicexml;
 
 import fi.jmvh.liferay.db2servicexml.db.DBImporter;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -32,7 +33,7 @@ public class DB2ServiceXML {
     public static void main( String[] args ) {
         defaults = new Properties();
         try {
-            defaults.load(new FileInputStream(new File("default.properties")));
+            defaults.load(new BufferedInputStream(new FileInputStream(new File("default.properties"))));
         } catch (Exception ex) {
             Logger.getLogger(DB2ServiceXML.class.getName()).log(Level.SEVERE, null, ex);
         }
