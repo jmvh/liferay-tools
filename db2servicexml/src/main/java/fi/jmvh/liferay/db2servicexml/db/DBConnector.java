@@ -13,8 +13,10 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -62,8 +64,18 @@ public class DBConnector {
     private List<Column> getColumns(DatabaseMetaData meta, String dbName, String table) throws SQLException {
         ArrayList<Column> res = new ArrayList<Column>();
         ResultSet columns = meta.getColumns(null,null,table,null);
+        ResultSet primaryKeys = meta.getPrimaryKeys(null, null, table);
+        HashSet<String> keys = new HashSet<String>();
+        while(primaryKeys.next()) {
+            keys.add(primaryKeys.getString("COLUMN_NAME"));
+        }
         while(columns.next() && columns.getRow() <= columns.getMetaData().getColumnCount()) {
-            Column column = new Column(columns.getString("COLUMN_NAME"),columns.getString("TYPE_NAME"));
+            String cName = columns.getString("COLUMN_NAME");
+            boolean primary = false;
+            if(keys.contains(cName)) {
+               primary = true;
+            }
+            Column column = new Column(cName,columns.getString("TYPE_NAME"),primary);
             column.setFriendlyName(friendlyNames.getProperty(dbName+"."+table+"."+column.getName(),column.getName()));
             res.add(column);
         }

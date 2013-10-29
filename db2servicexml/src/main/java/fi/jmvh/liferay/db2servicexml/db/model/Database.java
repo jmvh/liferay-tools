@@ -58,7 +58,11 @@ public class Database {
             ret += "<entity name=\""+t.getFriendlyName()+"\" table=\""+t.getName()+"\" local-service=\""+t.isLocalService()+"\" remote-service=\""+t.isRemoteService()+"\">\n";
             ret += "\n";
             for(Column c : t.getColumns()) {
-                ret += "\t<column name=\""+c.getFriendlyName()+"\" db-name=\""+c.getName()+"\" type=\""+c.getType()+"\" />\n";
+                ret += "\t<column name=\""+c.getFriendlyName()+"\" db-name=\""+c.getName()+"\" type=\""+c.getType()+"\"";
+                if(c.isPrimaryKey()) {
+                    ret += " primary=\"true\"";
+                }
+                ret += " />\n";
             }
             ret += "\n";
             ret += "</entity>\n";

@@ -12,22 +12,22 @@ public class Column {
     
     private String name;
     private String friendlyName;
-    private boolean idx;
+    private boolean primary;
     private String type;
 
     public Column(String name, String type) {
         init(name,type,false);
     }
     
-    public Column(String name, String type, boolean idx) {
-        init(name,type,idx);
+    public Column(String name, String type, boolean primary) {
+        init(name,type,primary);
     }
     
-    private void init(String name, String type, boolean idx) {
+    private void init(String name, String type, boolean primary) {
         this.name = name;
         friendlyName = name;
         this.type = type;
-        this.idx = idx;
+        this.primary = primary;
     }
 
     public String getName() {
@@ -38,12 +38,12 @@ public class Column {
         this.name = name;
     }
 
-    public boolean isIdx() {
-        return idx;
+    public boolean isPrimaryKey() {
+        return primary;
     }
 
-    public void setIdx(boolean idx) {
-        this.idx = idx;
+    public void setPrimaryKey(boolean primary) {
+        this.primary = primary;
     }
 
     public String getFriendlyName() {
