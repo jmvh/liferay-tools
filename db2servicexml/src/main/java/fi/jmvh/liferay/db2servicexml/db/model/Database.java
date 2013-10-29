@@ -55,7 +55,7 @@ public class Database {
         String ret = "<namespace>"+this.getDbName()+"</namespace>\n";
         for(Table t : this.getTables()) {
             ret += "\n";
-            ret += "<entity name=\""+t.getFriendlyName()+"\" table=\""+t.getName()+"\" local-service=\"true\" remote-service=\"false\">\n";
+            ret += "<entity name=\""+t.getFriendlyName()+"\" table=\""+t.getName()+"\" local-service=\""+t.isLocalService()+"\" remote-service=\""+t.isRemoteService()+"\">\n";
             ret += "\n";
             for(Column c : t.getColumns()) {
                 ret += "\t<column name=\""+c.getFriendlyName()+"\" db-name=\""+c.getName()+"\" type=\""+c.getType()+"\" />\n";
@@ -76,6 +76,8 @@ public class Database {
         for(Table t : this.getTables()) {
             ret += "# Friendly name for table "+t.getName()+"\n";
             ret += prefix+"."+t.getName()+"="+t.getFriendlyName()+"\n";
+            ret += prefix+"."+t.getName()+".LOCALSERVICE="+t.isLocalService()+"\n";
+            ret += prefix+"."+t.getName()+".REMOTESERVICE="+t.isRemoteService()+"\n";
             ret += "# Friendly names for columns in "+t.getName()+"\n";
             for(Column c : t.getColumns()) {
                 ret += prefix+"."+t.getName()+"."+c.getName()+"="+c.getFriendlyName()+"\n";

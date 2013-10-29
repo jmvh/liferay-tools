@@ -18,11 +18,15 @@ public class Table {
     private String name;
     private String friendlyName;
     private Map<String,Column> columns;
+    private boolean localService;
+    private boolean remoteService;
     
     public Table(String name) {
         this.name = name;
         friendlyName = name;
         columns = new HashMap<String,Column>();
+        localService = true;
+        remoteService = false;
     }
 
     public String getName() {
@@ -36,13 +40,6 @@ public class Table {
     public Collection<Column> getColumns() {
         return columns.values();
     }
-
-    public void setColumns(List<Column> columns) {
-        this.columns = new HashMap<String,Column>();
-        for(Column c : columns) {
-            this.columns.put(c.getName(), c);
-        }
-    }
     
     public void addColumn(Column column) {
         this.columns.put(column.getName(),column);
@@ -54,6 +51,22 @@ public class Table {
 
     public void setFriendlyName(String friendlyName) {
         this.friendlyName = friendlyName;
+    }
+
+    public boolean isLocalService() {
+        return localService;
+    }
+
+    public void setLocalService(boolean localService) {
+        this.localService = localService;
+    }
+
+    public boolean isRemoteService() {
+        return remoteService;
+    }
+
+    public void setRemoteService(boolean remoteService) {
+        this.remoteService = remoteService;
     }
     
 }
