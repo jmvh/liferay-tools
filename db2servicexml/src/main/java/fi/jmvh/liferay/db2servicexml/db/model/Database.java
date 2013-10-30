@@ -4,8 +4,10 @@
  */
 package fi.jmvh.liferay.db2servicexml.db.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -15,7 +17,6 @@ public class Database {
     
     private String dbName = "MyDatabase";
     private HashMap<String,Table> tables;
-    //private List<Table> tables;
     
     public Database() {
         init(null);
@@ -40,8 +41,9 @@ public class Database {
         this.dbName = dbName;
     }
     
-    public Collection<Table> getTables() {
-        return tables.values();
+    public List<Table> getTables() {
+        List<Table> dbTables = new ArrayList<Table>(tables.values());
+        return dbTables;
     }
     
     public void setTables(Collection<Table> tables) {
@@ -60,8 +62,8 @@ public class Database {
     }
     
     public String toServiceXML() {
-        String ret = "<namespace>"+this.getDbName()+"</namespace>\n";
-        for(Table t : this.getTables()) {
+        String ret = "<namespace>"+getDbName()+"</namespace>\n";
+        for(Table t : getTables()) {
             ret += "\n";
             ret += t.toServiceXML();
         }
@@ -72,10 +74,10 @@ public class Database {
     
     public String getFriendlyNamesSkeleton() {
         String ret = "";
-        String prefix = this.getDbName();
+        String prefix = getDbName();
         //ret += "# Friendly name for database "+this.getDbName()+"\n";
         //ret += prefix+"="+this.getDbName()+"\n";
-        for(Table t : this.getTables()) {
+        for(Table t : getTables()) {
             ret += "# Friendly name for table "+t.getName()+"\n";
             ret += prefix+"."+t.getName()+"="+t.getFriendlyName()+"\n";
             ret += prefix+"."+t.getName()+".LOCALSERVICE="+t.isLocalService()+"\n";

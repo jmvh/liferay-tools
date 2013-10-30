@@ -59,8 +59,14 @@ public class Column {
     }
     
     public String toServiceXML() {
+        String javaType = getType();
+        for(SQLDatatypeEnum e : SQLDatatypeEnum.values()) {
+            if(e.toString().equals(javaType)) {
+                javaType = e.getJavaType();
+            }
+        }
         String ret = "";
-        ret += "\t<column name=\""+getFriendlyName()+"\" db-name=\""+getName()+"\" type=\""+getType()+"\"";
+        ret += "\t<column name=\""+getFriendlyName()+"\" db-name=\""+getName()+"\" type=\""+javaType+"\"";
         if(isPrimaryKey()) {
             ret += " primary=\"true\"";
         }

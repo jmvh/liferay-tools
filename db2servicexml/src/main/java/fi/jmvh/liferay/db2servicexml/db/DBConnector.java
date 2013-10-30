@@ -15,7 +15,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,11 +57,18 @@ public class DBConnector {
             for(Column column : columns) {
                 table.addColumn(column);
             }
+            table.setDataSource(dbProperties.getProperty("data-source",null));
+            table.setTxManager(dbProperties.getProperty("tx-manager",null));
+            table.setSessionFactory(dbProperties.getProperty("session-factory",null));
             db.addTable(table);
+            addIndexes(table);
         }
+        // Foreign keys can only be added after all the tables have been constructed
+        /*
         for(Table table : tables) {
             addForeignKeys(db, table);
         }
+        */
         return db;
     }
     
@@ -78,7 +84,7 @@ public class DBConnector {
             String cName = columns.getString("COLUMN_NAME");
             boolean primary = false;
             if(keys.contains(cName)) {
-               primary = true;
+                primary = true;
             }
             Column column = new Column(cName,columns.getString("TYPE_NAME"),primary);
             column.setFriendlyName(friendlyNames.getProperty(dbName+"."+table+"."+column.getName(),column.getName()));
@@ -106,7 +112,13 @@ public class DBConnector {
     public void disconnect() throws SQLException {
         con.close();
     }
-
+    
+    /**
+     * Adds
+     * @param db
+     * @param table
+     * @throws SQLException
+     */
     private void addForeignKeys(Database db, Table table) throws SQLException {
         ResultSet fKeys = con.getMetaData().getImportedKeys(null, null, table.getName());
         while(fKeys.next()) {
@@ -121,4 +133,10 @@ public class DBConnector {
         }
     }
     
+    private void addIndexes(Table table) throws SQLException {
+        ResultSet indexes = con.getMetaData().getIndexInfo(null, null, table.getName(),false,false);
+        while(indexes.next()) {
+            table.getColumn(indexes.getString("COLUMN_NAME")).setPrimaryKey(true);
+        }
+    }
 }

@@ -12,7 +12,7 @@ import java.util.Map;
  *
  * @author Jussi Hynninen
  */
-public class Table {
+public class Table { //implements Comparable<Table> {
     
     private String name;
     private String friendlyName;
@@ -20,6 +20,9 @@ public class Table {
     private boolean localService;
     private boolean remoteService;
     private Map<String,ForeignKey> foreignKeys;
+    private String dataSource;
+    private String sessionFactory;
+    private String txManager;
     
     public Table(String name) {
         this.name = name;
@@ -78,7 +81,17 @@ public class Table {
         String ret = "";
         ret += "<entity name=\""+getFriendlyName()+
                 "\" table=\""+getName()+"\" local-service=\""+isLocalService()+
-                "\" remote-service=\""+isRemoteService()+"\">\n";
+                "\" remote-service=\""+isRemoteService()+"\"";
+        if(dataSource != null) {
+            ret += " data-source=\""+dataSource+"\"";
+        }
+        if(sessionFactory != null) {
+            ret += " session-factory=\""+sessionFactory+"\"";
+        }
+        if(txManager != null) {
+            ret += " tx-manager=\""+txManager+"\"";
+        }
+        ret += ">\n";
         ret += "\n";
         for(Column c : getColumns()) {
             ret += c.toServiceXML();
@@ -103,5 +116,43 @@ public class Table {
     public void addForeignKey(ForeignKey fk) {
         foreignKeys.put(fk.getName(), fk);
     }
+
+    /*
+     * A table that is referred to in another table has to be defined before
+     * the referring table (a referred table is "larger" than the referring one)
+     */
+    /*
+    public int compareTo(Table t) {
+        if(t.refersTo(this)) {
+            return 1;
+        }
+        if(this.refersTo(t)) {
+            return -1;
+        }
+        return 0;
+    }
+
+    private boolean refersTo(Table t) {
+        if(!foreignKeys.isEmpty()) {
+            for(ForeignKey fk : foreignKeys.values()) {
+                if(fk.getFkTable().equals(t.getFriendlyName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    */
     
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public void setTxManager(String txManager) {
+        this.txManager = txManager;
+    }
+
+    public void setSessionFactory(String sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 }

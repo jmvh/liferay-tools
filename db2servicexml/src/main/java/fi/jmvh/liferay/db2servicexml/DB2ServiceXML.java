@@ -64,6 +64,10 @@ public class DB2ServiceXML {
         options.addOption(new Option("s","create-config-skeleton",false,"Create a template file for defining friendly names for DB tables and columns"));
         options.addOption(new Option("S","config.skeleton.file",true,"File name for friendly names template"));
         options.addOption(new Option("o","config.service-ext.file",true,"File name for service.ext output"));
+        options.addOption(new Option("D","data-source",true,"Spring data source (data-source param for entities)"));
+        options.addOption(new Option("M","session-factory",true,"Spring session factory for the entities"));
+        options.addOption(new Option("T","tx-manager",true,"Spring transaction manager for the entities"));
+        
         try {
             CommandLine cmdLine = parser.parse(options,args);
             if(cmdLine.hasOption("help")) {
