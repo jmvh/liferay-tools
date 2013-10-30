@@ -4,9 +4,7 @@
  */
 package fi.jmvh.liferay.db2servicexml.db;
 
-import fi.jmvh.liferay.db2servicexml.db.model.Column;
 import fi.jmvh.liferay.db2servicexml.db.model.Database;
-import fi.jmvh.liferay.db2servicexml.db.model.Table;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
