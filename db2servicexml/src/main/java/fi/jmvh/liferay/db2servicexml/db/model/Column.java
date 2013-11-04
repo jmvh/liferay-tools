@@ -4,17 +4,31 @@
  */
 package fi.jmvh.liferay.db2servicexml.db.model;
 
+import fi.jmvh.liferay.db2servicexml.db.util.FalseExcludingBooleanAdapter;
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 /**
  *
  * @author Jussi Hynninen
  */
+@XmlType(name="column")
 public class Column {
-    
-    private String name;
+   
+    @XmlAttribute(name="name")
     private String friendlyName;
-    private boolean primary;
+    @XmlAttribute(name="db-name")
+    private String name;
+    @XmlAttribute(name="primary")
+    @XmlJavaTypeAdapter(FalseExcludingBooleanAdapter.class)
+    private Boolean primary;
     private String type;
+    @XmlAttribute(name="type")
+    private String javaType;
 
+    public Column() {
+    }
+    
     public Column(String name, String type) {
         init(name,type,false);
     }
@@ -28,8 +42,16 @@ public class Column {
         friendlyName = name;
         this.type = type;
         this.primary = primary;
+        
+        javaType = type;
+        for(SQLDatatypeEnum e : SQLDatatypeEnum.values()) {
+            if(e.toString().equals(javaType)) {
+                javaType = e.getJavaType();
+            }
+        }
     }
 
+    @XmlTransient
     public String getName() {
         return name;
     }
@@ -37,7 +59,7 @@ public class Column {
     public void setName(String name) {
         this.name = name;
     }
-
+    @XmlTransient
     public boolean isPrimaryKey() {
         return primary;
     }
@@ -46,6 +68,7 @@ public class Column {
         this.primary = primary;
     }
 
+    @XmlTransient
     public String getFriendlyName() {
         return friendlyName;
     }
@@ -57,21 +80,4 @@ public class Column {
     public String getType() {
         return this.type;
     }
-    
-    public String toServiceXML() {
-        String javaType = getType();
-        for(SQLDatatypeEnum e : SQLDatatypeEnum.values()) {
-            if(e.toString().equals(javaType)) {
-                javaType = e.getJavaType();
-            }
-        }
-        String ret = "";
-        ret += "\t<column name=\""+getFriendlyName()+"\" db-name=\""+getName()+"\" type=\""+javaType+"\"";
-        if(isPrimaryKey()) {
-            ret += " primary=\"true\"";
-        }
-        ret += " />\n";
-        return ret;
-    }
-    
 }

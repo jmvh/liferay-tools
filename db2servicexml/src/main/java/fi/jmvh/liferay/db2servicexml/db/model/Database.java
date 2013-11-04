@@ -4,21 +4,43 @@
  */
 package fi.jmvh.liferay.db2servicexml.db.model;
 
+import fi.jmvh.liferay.db2servicexml.db.util.DBImporter;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author Jussi Hynninen
  */
+/*
+ * <service-builder package-path="fi.csc.ahaa"
+ * auto-namespace-tables="false">
+ */
+@XmlRootElement(name="service-builder")
 public class Database {
     
-    private String dbName = "MyDatabase";
+    @XmlElement(name="namespace")
+    private String dbName;
     private HashMap<String,Table> tables;
+    @XmlAttribute(name="package-path")
+    private String packagePath;
+    @XmlAttribute(name="auto-namespace-tables")
+    private boolean autoNamespaceTables;
     
     public Database() {
+        
         init(null);
     }
     
@@ -27,12 +49,16 @@ public class Database {
     }
     
     private void init(String dbName) {
+        this.dbName = "MyDatabase";
         if(dbName != null) {
             this.dbName = dbName;
         }
         this.tables = new HashMap<String,Table>();
+        this.autoNamespaceTables = false;
+        this.packagePath = "my.package.path";
     }
     
+    @XmlTransient
     public String getDbName() {
         return dbName;
     }
@@ -41,6 +67,7 @@ public class Database {
         this.dbName = dbName;
     }
     
+    @XmlElement(name="entity")
     public List<Table> getTables() {
         List<Table> dbTables = new ArrayList<Table>(tables.values());
         return dbTables;
@@ -61,15 +88,42 @@ public class Database {
         return tables.get(name);
     }
     
+    @XmlTransient
+    public String getPackagePath() {
+        return packagePath;
+    }
+    
+    public void setPackagePath(String packagePath) {
+        this.packagePath = packagePath;
+    }
+    
+    @XmlTransient
+    public boolean isAutoNamespaceTables() {
+        return autoNamespaceTables;
+    }
+    
+    public void setAutoNameSpaceTables(boolean autoNameSpaceTables) {
+        this.autoNamespaceTables = autoNameSpaceTables;
+    }
+    
     public String toServiceXML() {
-        String ret = "<namespace>"+getDbName()+"</namespace>\n";
-        for(Table t : getTables()) {
-            ret += "\n";
-            ret += t.toServiceXML();
+        try {
+            Marshaller marsh = JAXBContext.newInstance(Database.class).createMarshaller();
+            marsh.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            // Set headers
+            marsh.setProperty("com.sun.xml.bind.xmlHeaders",
+                    "\n<!DOCTYPE service-builder PUBLIC "+
+                    "\"-//Liferay//DTD Service Builder 6.1.0//EN\" "+
+                    "\"http://www.liferay.com/dtd/liferay-service-builder_6_1_0.dtd\">");
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            marsh.marshal(this, bout);
+            // Dirty hack.
+            String ret = new String(bout.toByteArray()).replace(" standalone=\"yes\"?>","?>");
+            return ret;
+        } catch (JAXBException ex) {
+            Logger.getLogger(DBImporter.class.getName()).log(Level.SEVERE, null, ex);
         }
-        ret += "\n";
-        
-        return ret;
+        return null;
     }
     
     public String getFriendlyNamesSkeleton() {

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package fi.jmvh.liferay.db2servicexml.db;
+package fi.jmvh.liferay.db2servicexml.db.util;
 
 import fi.jmvh.liferay.db2servicexml.db.model.Column;
 import fi.jmvh.liferay.db2servicexml.db.model.Database;

@@ -1,6 +1,6 @@
 package fi.jmvh.liferay.db2servicexml;
 
-import fi.jmvh.liferay.db2servicexml.db.DBImporter;
+import fi.jmvh.liferay.db2servicexml.db.util.DBImporter;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -42,7 +42,8 @@ public class DB2ServiceXML {
             //System.out.println(new DBImporter(defaults).getDB().toServiceXML());
             writeToFile(
                     new File(defaults.getProperty("config.service-ext.file")),
-                    new DBImporter(defaults).getDB().toServiceXML(),
+                    //new DBImporter(defaults).getDB().toServiceXML(),
+                    new DBImporter(defaults).getServiceXML(),
                     false
                     );
         } catch (SQLException ex) {
@@ -67,7 +68,13 @@ public class DB2ServiceXML {
         options.addOption(new Option("D","data-source",true,"Spring data source (data-source param for entities)"));
         options.addOption(new Option("M","session-factory",true,"Spring session factory for the entities"));
         options.addOption(new Option("T","tx-manager",true,"Spring transaction manager for the entities"));
-        
+        options.addOption(new Option("N","package-path",true,"package-path attribute for the service-builder"));
+        options.addOption(new Option("A","auto-namespace-tables",true,"package-path attribute for the service-builder"));
+        /*
+         service-builder.package-path=fi.jmvh.liferay
+        service-builder.auto-namespace-tables=false
+
+         */
         try {
             CommandLine cmdLine = parser.parse(options,args);
             if(cmdLine.hasOption("help")) {
