@@ -1,8 +1,9 @@
 db2servicexml
 =============
 
-This is a tool for programmatically creating database definitions for the
-Liferay service builder.
+A tool for programmatically creating database definitions for the Liferay service builder.
+
+This is something to provide help when integrating existing (especially large) databases with Liferay. Currently supports the 6.1.0 DTD.
 
 <pre>
 $ mvn package

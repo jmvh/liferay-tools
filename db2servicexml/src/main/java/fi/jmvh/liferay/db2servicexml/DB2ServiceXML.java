@@ -40,10 +40,16 @@ public class DB2ServiceXML {
         parseOptions(args);
         try {
             //System.out.println(new DBImporter(defaults).getDB().toServiceXML());
+            DBImporter importer = new DBImporter(defaults);
             writeToFile(
                     new File(defaults.getProperty("config.service-ext.file")),
                     //new DBImporter(defaults).getDB().toServiceXML(),
-                    new DBImporter(defaults).getServiceXML(),
+                    importer.getServiceXML(),
+                    false
+                    );
+            writeToFile(
+                    new File(defaults.getProperty("config.hints-xml.filename")),
+                    importer.getHintsXML(),
                     false
                     );
         } catch (SQLException ex) {
@@ -69,6 +75,7 @@ public class DB2ServiceXML {
         options.addOption(new Option("M","session-factory",true,"Spring session factory for the entities"));
         options.addOption(new Option("T","tx-manager",true,"Spring transaction manager for the entities"));
         options.addOption(new Option("N","package-path",true,"package-path attribute for the service-builder"));
+        options.addOption(new Option("a","author",true,"Author name"));
         options.addOption(new Option("A","auto-namespace-tables",true,"package-path attribute for the service-builder"));
         
         try {

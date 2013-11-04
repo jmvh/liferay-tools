@@ -5,6 +5,7 @@
 package fi.jmvh.liferay.db2servicexml.db.util;
 
 import fi.jmvh.liferay.db2servicexml.db.model.Database;
+import fi.jmvh.liferay.db2servicexml.db.model.hints.Hints;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -39,6 +40,10 @@ public class DBImporter {
     
     public String getServiceXML() {
         return db.toServiceXML();
+    }
+    
+    public String getHintsXML() {
+        return new Hints(db).toHintsXML();
     }
     
 }
