@@ -70,7 +70,7 @@ public class DB2ServiceXML {
         options.addOption(new Option("T","tx-manager",true,"Spring transaction manager for the entities"));
         options.addOption(new Option("N","package-path",true,"package-path attribute for the service-builder"));
         options.addOption(new Option("A","auto-namespace-tables",true,"package-path attribute for the service-builder"));
-
+        
         try {
             CommandLine cmdLine = parser.parse(options,args);
             if(cmdLine.hasOption("help")) {
