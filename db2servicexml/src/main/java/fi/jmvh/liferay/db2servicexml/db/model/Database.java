@@ -31,6 +31,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement(name="service-builder")
 public class Database {
     
+    @XmlElement(name="author")
+    private String author;
     @XmlElement(name="namespace")
     private String dbName;
     private HashMap<String,Table> tables;
@@ -49,6 +51,7 @@ public class Database {
     }
     
     private void init(String dbName) {
+        this.author = "Your Name";
         this.dbName = "MyDatabase";
         if(dbName != null) {
             this.dbName = dbName;
@@ -78,6 +81,10 @@ public class Database {
         for(Table t : tables) {
             addTable(t);
         }
+    }
+    
+    public void setAuthor(String author) {
+        this.author = author;
     }
     
     public void addTable(Table table) {

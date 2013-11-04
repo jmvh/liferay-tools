@@ -10,7 +10,7 @@ package fi.jmvh.liferay.db2servicexml.db.model;
  */
 public enum SQLDatatypeEnum {
     varchar("String"),
-    numeric("int");
+    numeric("long");
     
     private String javaType;
     

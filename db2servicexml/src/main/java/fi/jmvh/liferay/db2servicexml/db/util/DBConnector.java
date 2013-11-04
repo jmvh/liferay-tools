@@ -63,6 +63,7 @@ public class DBConnector {
             db.addTable(table);
             addIndexes(table);
         }
+        db.setAuthor(dbProperties.getProperty("author","Your Name"));
         // Foreign keys can only be added after all the tables have been constructed
         /*
         for(Table table : tables) {
@@ -88,6 +89,7 @@ public class DBConnector {
             }
             Column column = new Column(cName,columns.getString("TYPE_NAME"),primary);
             column.setFriendlyName(friendlyNames.getProperty(dbName+"."+table+"."+column.getName(),column.getName()));
+            column.setLength(columns.getInt("COLUMN_SIZE"));
             res.add(column);
         }
         

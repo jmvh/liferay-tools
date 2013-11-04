@@ -25,6 +25,8 @@ public class Column {
     private String type;
     @XmlAttribute(name="type")
     private String javaType;
+    @XmlTransient
+    private int length;
 
     public Column() {
     }
@@ -79,5 +81,20 @@ public class Column {
 
     public String getType() {
         return this.type;
+ 
+    }
+    
+    @XmlTransient
+    public int getLength() {
+        return this.length;
+    }
+    
+    public void setLength(int length) {
+        this.length = length;
+    }
+    
+    @XmlTransient
+    public String getJavaType() {
+        return this.javaType;
     }
 }
