@@ -96,7 +96,7 @@ public class DB2ServiceXML {
             }
             
             if(cmdLine.hasOption("create-config-skeleton")) {
-                createFriendlyNamesFile();
+                createDbPropertiesFile();
             }
         } catch (ParseException ex) {
             printHelp(options);
@@ -109,7 +109,7 @@ public class DB2ServiceXML {
         System.exit(1);
     }
     
-    private static void createFriendlyNamesFile() {
+    private static void createDbPropertiesFile() {
         try {
             writeToFile(
                     new File(defaults.getProperty("config.skeleton.file")),

@@ -6,6 +6,7 @@ package fi.jmvh.liferay.db2servicexml.db.util;
 
 import fi.jmvh.liferay.db2servicexml.db.model.Column;
 import fi.jmvh.liferay.db2servicexml.db.model.Database;
+import fi.jmvh.liferay.db2servicexml.db.model.Finder;
 import fi.jmvh.liferay.db2servicexml.db.model.ForeignKey;
 import fi.jmvh.liferay.db2servicexml.db.model.Table;
 import java.io.BufferedInputStream;
@@ -17,6 +18,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -54,9 +56,22 @@ public class DBConnector {
         List<Table> tables = getTables(meta,db.getDbName());
         for(Table table : tables) {
             List<Column> columns = getColumns(meta,db.getDbName(),table.getName());
+            
+            ArrayList<String> finderColumns = new ArrayList<String>();
+            String finders = friendlyNames.getProperty(db.getDbName()+"."+table.getName()+".FINDERS",null);
+            if(finders != null && !finders.equals("")) {
+                finderColumns.addAll(Arrays.asList(finders.split(",")));
+            }
+            
             for(Column column : columns) {
                 table.addColumn(column);
+                if(finderColumns.contains(column.getName())) {
+                    table.addFinder(new Finder(column));
+                }
             }
+            /*
+            
+            */
             table.setDataSource(dbProperties.getProperty("data-source",null));
             table.setTxManager(dbProperties.getProperty("tx-manager",null));
             table.setSessionFactory(dbProperties.getProperty("session-factory",null));

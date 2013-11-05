@@ -143,6 +143,8 @@ public class Database {
             ret += prefix+"."+t.getName()+"="+t.getFriendlyName()+"\n";
             ret += prefix+"."+t.getName()+".LOCALSERVICE="+t.isLocalService()+"\n";
             ret += prefix+"."+t.getName()+".REMOTESERVICE="+t.isRemoteService()+"\n";
+            ret += "# Finders for table "+t.getName()+" (comma separated list of column names)\n";
+            ret += prefix+"."+t.getName()+".FINDERS=\n";
             ret += "# Friendly names for columns in "+t.getName()+"\n";
             for(Column c : t.getColumns()) {
                 ret += prefix+"."+t.getName()+"."+c.getName()+"="+c.getFriendlyName()+"\n";

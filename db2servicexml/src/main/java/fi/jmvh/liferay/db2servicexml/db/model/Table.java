@@ -4,8 +4,10 @@
  */
 package fi.jmvh.liferay.db2servicexml.db.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.annotation.*;
 
@@ -32,6 +34,7 @@ public class Table { //implements Comparable<Table> {
     private String sessionFactory;
     @XmlAttribute(name="tx-manager")
     private String txManager;
+    private List<Finder> finders;
     
     public Table() { };
     
@@ -42,6 +45,7 @@ public class Table { //implements Comparable<Table> {
         localService = true;
         remoteService = false;
         foreignKeys = new HashMap<String,ForeignKey>();
+        this.finders = new ArrayList<Finder>();
     }
     
     @XmlTransient
@@ -103,6 +107,19 @@ public class Table { //implements Comparable<Table> {
     
     public void addForeignKey(ForeignKey fk) {
         foreignKeys.put(fk.getName(), fk);
+    }
+    
+    @XmlElement(name="finder")
+    public List<Finder> getFinders() {
+        return finders;
+    }
+    
+    public void setFinders(List<Finder> finders) {
+        this.finders = finders;
+    }
+    
+    public void addFinder(Finder finder) {
+        finders.add(finder);
     }
     
     /*
