@@ -8,8 +8,12 @@ import fi.jmvh.liferay.db2servicexml.db.util.DBImporter;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBContext;
@@ -23,10 +27,6 @@ import javax.xml.bind.annotation.XmlTransient;
 /**
  *
  * @author Jussi Hynninen
- */
-/*
- * <service-builder package-path="fi.csc.ahaa"
- * auto-namespace-tables="false">
  */
 @XmlRootElement(name="service-builder")
 public class Database {
@@ -154,6 +154,30 @@ public class Database {
             }
         }
         return ret;
+    }
+    
+    public Properties getDBDefaultProperties() {
+        Properties props = new Properties() {
+            @Override
+            public synchronized Enumeration<Object> keys() {
+                return Collections.enumeration(new TreeSet<Object>(super.keySet()));
+            }
+        };
+        String prefix = getDbName();
+        for(Table t : getTables()) {
+            // No need to set the defaults yet, these will be overwritten anyway
+            props.setProperty(prefix+"."+t.getName(), "");
+            props.setProperty(prefix+"."+t.getName()+".LOCALSERVICE", "");
+            props.setProperty(prefix+"."+t.getName()+".REMOTESERVICE", "");
+            props.setProperty(prefix+"."+t.getName()+".FINDERS","");
+            for(Column c : t.getColumns()) {
+                props.setProperty(prefix+"."+t.getName()+"."+c.getName(), "");
+            }
+            for(ForeignKey fk : t.getForeignKeys()) {
+                props.setProperty(prefix+"."+t.getName()+"."+fk.getName(), "");
+            }
+        }
+        return props;
     }
     
 }

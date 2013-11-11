@@ -63,9 +63,6 @@ public class Hints {
             marsh.setProperty("com.sun.xml.bind.xmlHeaders", "<?xml version=\"1.0\"?>\n");
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             marsh.marshal(this, bout);
-            // Dirty hack.
-            //String ret = new String(bout.toByteArray()).replace(" standalone=\"yes\"?>","?>");
-            //ret = ret.replace(ret, ret)
             return new String(bout.toByteArray());
         } catch (JAXBException ex) {
             Logger.getLogger(Hints.class.getName()).log(Level.SEVERE, null, ex);

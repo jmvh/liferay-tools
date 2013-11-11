@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -40,7 +42,7 @@ public class DBConnector {
             try {
                 friendlyNames.load(new BufferedInputStream(new FileInputStream(new File(dbProperties.getProperty("config.skeleton.file")))));
             } catch (Exception ex) {
-                // Logger.getLogger(DBConnector.class.getName()).log(Level.INFO, "Could not load "+dbProperties.getProperty("config.skeleton.file")+", ignoring...");
+                Logger.getLogger(DBConnector.class.getName()).log(Level.INFO, "Could not load "+dbProperties.getProperty("config.skeleton.file")+", ignoring...");
             }
         }
         con = DriverManager.getConnection(

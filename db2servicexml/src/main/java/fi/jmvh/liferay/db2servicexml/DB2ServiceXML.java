@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
@@ -39,11 +40,9 @@ public class DB2ServiceXML {
         }
         parseOptions(args);
         try {
-            //System.out.println(new DBImporter(defaults).getDB().toServiceXML());
             DBImporter importer = new DBImporter(defaults);
             writeToFile(
                     new File(defaults.getProperty("config.service-ext.file")),
-                    //new DBImporter(defaults).getDB().toServiceXML(),
                     importer.getServiceXML(),
                     false
                     );
@@ -111,11 +110,26 @@ public class DB2ServiceXML {
     
     private static void createDbPropertiesFile() {
         try {
-            writeToFile(
-                    new File(defaults.getProperty("config.skeleton.file")),
-                    new DBImporter(defaults).getDB().getFriendlyNamesSkeleton(),
-                    true
-                    );
+            Properties props = new DBImporter(defaults).getDB().getDBDefaultProperties();
+            Properties dbProperties = new Properties();
+            if(defaults.containsKey("config.skeleton.file")) {
+                File propsFile;
+                try {
+                    propsFile = new File(defaults.getProperty("config.skeleton.file"));
+                    dbProperties.load(new BufferedInputStream(new FileInputStream(propsFile)));
+                    // Persist already made customizations
+                    for(Object p : props.keySet()) {
+                        if(dbProperties.containsKey(p)) {
+                            props.setProperty(p.toString(), dbProperties.getProperty(p.toString()));
+                        }
+                    }
+                    confirm("File "+propsFile.getName()+" already exists, do you want to continue");
+                    props.store(new FileOutputStream(propsFile), getDefaultPropertiesHelp());
+                } catch (Exception ex) {
+                    Logger.getLogger(DB2ServiceXML.class.getName()).log(Level.INFO, "Could not persist DB defaults:,{0}", ex);
+                    System.exit(1);
+                }
+            }
             System.exit(0);
         } catch (SQLException ex) {
             Logger.getLogger(DB2ServiceXML.class.getName()).log(Level.SEVERE, null, ex);
@@ -123,7 +137,7 @@ public class DB2ServiceXML {
             Logger.getLogger(DB2ServiceXML.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
     private static void confirm(String question) {
         Scanner s = new Scanner(System.in);
         System.out.print(question+" (y/n)? ");
@@ -150,6 +164,23 @@ public class DB2ServiceXML {
         } catch (IOException ex) {
             Logger.getLogger(DB2ServiceXML.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private static  String getDefaultPropertiesHelp() {
+        String ret = "";
+        ret += "DB defaults file format:\n";
+        ret += "# Friendly name for a table entity:\n";
+        ret += "# <dbname>.<tablename>=TableFriendlyName\n";
+        ret += "# Finder columns for table as a comma-separated list\n";
+        ret += "# <dbname>.<tablename>.FINDERS=column1,column2\n";
+        ret += "# Publish entity as a local service (true/false, default true)?\n";
+        ret += "# <dbname>.<tablename>.LOCALSERVICE=true\n";
+        ret += "# Publish entity as a remote service (true/false, default false)?\n";
+        ret += "# <dbname>.<tablename>.REMOTESERVICE=false\n";
+        ret += "# Friendly name for a column:\n";
+        ret += "# <dbname>.<tablename>.<columnname>=ColumnFriendlyName\n";
+        return ret;
+        
     }
     
 }
