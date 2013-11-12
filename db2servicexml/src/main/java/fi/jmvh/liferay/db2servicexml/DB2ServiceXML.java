@@ -116,14 +116,20 @@ public class DB2ServiceXML {
                 File propsFile;
                 try {
                     propsFile = new File(defaults.getProperty("config.skeleton.file"));
-                    dbProperties.load(new BufferedInputStream(new FileInputStream(propsFile)));
+                    try {
+                        dbProperties.load(new BufferedInputStream(new FileInputStream(propsFile)));
+                    } catch(Exception e) {
+                        // Just let this fail
+                    }
                     // Persist already made customizations
                     for(Object p : props.keySet()) {
                         if(dbProperties.containsKey(p)) {
                             props.setProperty(p.toString(), dbProperties.getProperty(p.toString()));
                         }
                     }
-                    confirm("File "+propsFile.getName()+" already exists, do you want to continue");
+                    if(propsFile.exists()) {
+                        confirm("File "+propsFile.getName()+" already exists, do you want to continue");
+                    }
                     props.store(new FileOutputStream(propsFile), getDefaultPropertiesHelp());
                 } catch (Exception ex) {
                     Logger.getLogger(DB2ServiceXML.class.getName()).log(Level.INFO, "Could not persist DB defaults:,{0}", ex);

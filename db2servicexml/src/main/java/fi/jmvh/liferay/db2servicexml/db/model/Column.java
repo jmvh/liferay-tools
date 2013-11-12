@@ -44,13 +44,7 @@ public class Column {
         friendlyName = name;
         this.type = type;
         this.primary = primary;
-        
-        javaType = type;
-        for(SQLDatatypeEnum e : SQLDatatypeEnum.values()) {
-            if(e.toString().equals(javaType)) {
-                javaType = e.getJavaType();
-            }
-        }
+        javaType = DataTypes.getJavaType(type);
     }
 
     @XmlTransient

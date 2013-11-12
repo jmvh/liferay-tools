@@ -24,3 +24,8 @@ $ ./db2servicexml.sh -d jdbc:postgresql://localhost:5432/mydb -u dbuser -p dbpas
 This will create a service-ext.template file that can be copy-pasted to your service.xml file.
 
 The first step can be skipped but if you want to change display names or control service publishing, it is necessary.
+
+Shortcomings
+------------
+- If your database uses sequences, you have to configure them manually in your service.xml
+- Finders can only return collections

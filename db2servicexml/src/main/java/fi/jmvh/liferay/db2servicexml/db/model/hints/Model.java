@@ -5,6 +5,7 @@
 package fi.jmvh.liferay.db2servicexml.db.model.hints;
 
 import fi.jmvh.liferay.db2servicexml.db.model.Column;
+import fi.jmvh.liferay.db2servicexml.db.model.DataTypes;
 import fi.jmvh.liferay.db2servicexml.db.model.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,9 @@ class Model {
         init(t,pkgPath);
         t.getFriendlyName();
         for(Column c : t.getColumns()) {
-            this.addColumn(c);
+            if(!DataTypes.excludeFromHints(c.getType())) {
+                this.addColumn(c);
+            }
         }
     }
     

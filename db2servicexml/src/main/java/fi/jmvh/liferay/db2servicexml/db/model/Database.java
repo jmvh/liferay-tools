@@ -133,29 +133,6 @@ public class Database {
         return null;
     }
     
-    public String getFriendlyNamesSkeleton() {
-        String ret = "";
-        String prefix = getDbName();
-        //ret += "# Friendly name for database "+this.getDbName()+"\n";
-        //ret += prefix+"="+this.getDbName()+"\n";
-        for(Table t : getTables()) {
-            ret += "# Friendly name for table "+t.getName()+"\n";
-            ret += prefix+"."+t.getName()+"="+t.getFriendlyName()+"\n";
-            ret += prefix+"."+t.getName()+".LOCALSERVICE="+t.isLocalService()+"\n";
-            ret += prefix+"."+t.getName()+".REMOTESERVICE="+t.isRemoteService()+"\n";
-            ret += "# Finders for table "+t.getName()+" (comma separated list of column names)\n";
-            ret += prefix+"."+t.getName()+".FINDERS=\n";
-            ret += "# Friendly names for columns in "+t.getName()+"\n";
-            for(Column c : t.getColumns()) {
-                ret += prefix+"."+t.getName()+"."+c.getName()+"="+c.getFriendlyName()+"\n";
-            }
-            for(ForeignKey fk : t.getForeignKeys()) {
-                ret += prefix+"."+t.getName()+"."+fk.getName()+"="+fk.getFriendlyName()+"\n";
-            }
-        }
-        return ret;
-    }
-    
     public Properties getDBDefaultProperties() {
         Properties props = new Properties() {
             @Override
@@ -165,13 +142,12 @@ public class Database {
         };
         String prefix = getDbName();
         for(Table t : getTables()) {
-            // No need to set the defaults yet, these will be overwritten anyway
-            props.setProperty(prefix+"."+t.getName(), "");
-            props.setProperty(prefix+"."+t.getName()+".LOCALSERVICE", "");
-            props.setProperty(prefix+"."+t.getName()+".REMOTESERVICE", "");
+            props.setProperty(prefix+"."+t.getName(), t.getName());
+            props.setProperty(prefix+"."+t.getName()+".LOCALSERVICE", String.valueOf(t.isLocalService()));
+            props.setProperty(prefix+"."+t.getName()+".REMOTESERVICE", String.valueOf(t.isRemoteService()));
             props.setProperty(prefix+"."+t.getName()+".FINDERS","");
             for(Column c : t.getColumns()) {
-                props.setProperty(prefix+"."+t.getName()+"."+c.getName(), "");
+                props.setProperty(prefix+"."+t.getName()+"."+c.getName(), c.getName());
             }
             for(ForeignKey fk : t.getForeignKeys()) {
                 props.setProperty(prefix+"."+t.getName()+"."+fk.getName(), "");
