@@ -22,14 +22,15 @@ Edit the property file and set friendly names for your tables and columns
 <pre>
 $ emacs db-defaults.properties
 </pre>
-Create your service-ext.template file that can be copy-pasted to your service.xml file (and portlet-model-hints.xml).
+Create your service-ext.template file that can be copy-pasted to your <i>service.xml</i> file (and <i>portlet-model-hints.xml</i>).
 <pre>
 $ ./db2servicexml.sh -d jdbc:postgresql://localhost:5432/mydb -u dbuser -p dbpasswd \
 --data-source YourSpringDataSource \
 --session-factory YourSessionFactory --tx-manager YourTransactionManager \
 --package-path com.your.pkg --author "Your Name"
-
 </pre>
+
+The parameters have, of course, to match the ones you have defined in your <i>ext-spring.xml</i> file
 
 The first step can be skipped but if you want to change display names or control service publishing, it is necessary.
 
