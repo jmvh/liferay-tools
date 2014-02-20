@@ -38,3 +38,4 @@ Shortcomings
 ------------
 - If your database uses sequences, you have to configure them manually in your service.xml
 - Finders can only return collections
+- For now only supports String, long and Boolean datatypes
